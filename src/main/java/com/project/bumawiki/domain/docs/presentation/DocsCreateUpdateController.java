@@ -35,7 +35,7 @@ public class DocsCreateUpdateController {
     @PutMapping("/update/{id}")
     public DocsResponseDto updateDocs(@PathVariable Long id,@RequestPart DocsUpdateRequestDto request,@RequestPart MultipartFile[] files) throws IOException {
         UserResponseDto currentUser = docsUpdateService.findCurrentUser();
-
+        return docsUpdateService.execute(id, currentUser, request, files);
     }
 
 }

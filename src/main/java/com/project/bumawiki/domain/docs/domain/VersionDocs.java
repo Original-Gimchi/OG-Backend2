@@ -14,11 +14,11 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class VersionDocs {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "versionDocs_id")
+    @Column(name = "version_docs_id")
     private Long id;
 
     @NotNull
