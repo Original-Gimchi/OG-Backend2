@@ -35,8 +35,6 @@ public class DocsCreateService {
     private final DocsRepository docsRepository;
     private final VersionDocsRepository versionDocsRepository;
 
-    @Autowired
-    private final StorageService storageService;
     private final JwtUtil jwtUtil;
     private final AuthIdRepository authIdRepository;
     private final ImageService imageService;

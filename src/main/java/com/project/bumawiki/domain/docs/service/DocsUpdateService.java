@@ -32,7 +32,6 @@ import java.util.ArrayList;
 @ServiceWithTransactionalReadOnly
 public class DocsUpdateService {
     private final DocsRepository docsRepository;
-    private final StorageService storageService;
     private final VersionDocsRepository versionDocsRepository;
 
     private final ImageService imageService;
