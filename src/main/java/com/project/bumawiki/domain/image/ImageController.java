@@ -12,21 +12,26 @@ import java.io.IOException;
 
 
 
+
 @RestController
 @RequestMapping("/image")
 public class ImageController {
+
     private ImageService imageService;
 
     @Autowired
     public void FileController(ImageService imageService){
         this.imageService = imageService;
+
     }
     @GetMapping("/display/{DocsName}/{fileName}")
     public ResponseEntity<Resource> displayImage(@PathVariable String fileName,
                                                  @PathVariable String DocsName,
                                                  HttpServletRequest request) {
         // Load file as Resource
+
         Resource resource = imageService.loadFileAsResource(DocsName, fileName);
+
         // Try to determine file's content type
         String contentType = null;
         try {

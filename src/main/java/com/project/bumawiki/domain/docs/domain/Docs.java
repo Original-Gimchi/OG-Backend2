@@ -48,7 +48,7 @@ public class Docs {
     }
 
     public Docs updateVersionDocs(VersionDocs versionDocs){
-        docsVersion.add(0, versionDocs);
+        docsVersion.add(versionDocs);
         return this;
     }
 

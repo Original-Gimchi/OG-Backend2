@@ -47,7 +47,7 @@ public class DocsInformationService {
     }
 
     public List<DocsNameAndEnrollResponseDto> findAllHumanistTeacher(){
-        List<Docs> allTeacher = docsRepository.findByDocsType(DocsType.HUMANITIES_TEACHER);
+        List<Docs> allTeacher = docsRepository.findByDocsType(DocsType.TEACHER);
 
         return allTeacher.stream()
                 .map(DocsNameAndEnrollResponseDto::new)

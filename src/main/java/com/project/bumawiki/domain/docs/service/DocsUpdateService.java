@@ -10,7 +10,9 @@ import com.project.bumawiki.domain.docs.exception.NoUpdatablePostException;
 import com.project.bumawiki.domain.docs.presentation.dto.DocsCreateRequestDto;
 import com.project.bumawiki.domain.docs.presentation.dto.DocsResponseDto;
 import com.project.bumawiki.domain.docs.presentation.dto.DocsUpdateRequestDto;
+
 import com.project.bumawiki.domain.image.service.ImageService;
+
 import com.project.bumawiki.domain.user.entity.User;
 import com.project.bumawiki.domain.user.entity.repository.UserRepository;
 import com.project.bumawiki.domain.user.exception.UserNotLoginException;
@@ -30,19 +32,24 @@ import java.util.ArrayList;
 @ServiceWithTransactionalReadOnly
 public class DocsUpdateService {
     private final DocsRepository docsRepository;
+    private final StorageService storageService;
     private final VersionDocsRepository versionDocsRepository;
 
     private final ImageService imageService;
     @Transactional
+
     public DocsResponseDto execute(Long docsId, UserResponseDto userResponseDto, DocsUpdateRequestDto docsUpdateRequestDto, MultipartFile[] files) throws IOException {
+
         try {
             SecurityUtil.getCurrentUser().getUser().getAuthority();
         }catch(Exception e){
             throw UserNotLoginException.EXCEPTION;
         }
+
         Docs FoundDocs = docsRepository.findById(docsId)
                         .orElseThrow(() -> DocsNotFoundException.EXCEPTION);
         setImageUrlInContents(docsUpdateRequestDto,imageService.GetFileUrl(files, FoundDocs.getTitle()));
+
         VersionDocs savedVersionDocs = saveVersionDocs(docsUpdateRequestDto, docsId);
         Docs docs = setVersionDocsToDocs(savedVersionDocs);
         docs.setModifiedTime(savedVersionDocs.getThisVersionCreatedAt());
@@ -96,15 +103,14 @@ public class DocsUpdateService {
         return new UserResponseDto(user);
     }
 
-    /**
-     * 프론트가 [사진1]이라고 보낸거 우리가 저장한 이미지 주소로 바꾸는 로직
-     */
+
     public void setImageUrlInContents(DocsUpdateRequestDto docsUpdateRequestDto, ArrayList<String> urls){
         String content = docsUpdateRequestDto.getContents();
         for (String url : urls) {
             content = content.replace("[[사진]]",url);
         }
         docsUpdateRequestDto.updateContent(content);
+
     }
 }
 

@@ -9,3 +9,4 @@ public class NoImageException extends BumawikiException {
         super(errorCode);
     }
 }
+
