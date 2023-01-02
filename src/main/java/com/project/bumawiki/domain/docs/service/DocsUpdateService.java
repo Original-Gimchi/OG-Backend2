@@ -7,18 +7,15 @@ import com.project.bumawiki.domain.docs.domain.repository.DocsRepository;
 import com.project.bumawiki.domain.docs.domain.repository.VersionDocsRepository;
 import com.project.bumawiki.domain.docs.exception.DocsNotFoundException;
 import com.project.bumawiki.domain.docs.exception.NoUpdatablePostException;
-import com.project.bumawiki.domain.docs.presentation.dto.DocsCreateRequestDto;
 import com.project.bumawiki.domain.docs.presentation.dto.DocsResponseDto;
 import com.project.bumawiki.domain.docs.presentation.dto.DocsUpdateRequestDto;
-
 import com.project.bumawiki.domain.image.service.ImageService;
-
 import com.project.bumawiki.domain.user.entity.User;
-import com.project.bumawiki.domain.user.entity.repository.UserRepository;
 import com.project.bumawiki.domain.user.exception.UserNotLoginException;
 import com.project.bumawiki.domain.user.presentation.dto.UserResponseDto;
 import com.project.bumawiki.global.annotation.ServiceWithTransactionalReadOnly;
 import com.project.bumawiki.global.util.SecurityUtil;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
