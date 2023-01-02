@@ -15,6 +15,8 @@ public class DocsUpdateRequestDto {
     @NotNull
     private String contents;
 
-    @Lob
-    private List<Clob> imageLink = new ArrayList<>();
+    public DocsUpdateRequestDto updateContent(String setContent){
+        this.contents = setContent;
+        return this;
+    }
 }

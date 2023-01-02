@@ -14,9 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.util.annotation.Nullable;
 
-import java.io.File;
 import java.io.IOException;
 
 @Validated
@@ -28,22 +26,16 @@ public class DocsCreateUpdateController {
     private final DocsCreateService docsCreateService;
     private final DocsUpdateService docsUpdateService;
 
-    @Autowired
-    private StorageService StorageService;
 
-    @PostMapping(path = "/create", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public DocsResponseDto createDocs(
-            @RequestPart DocsCreateRequestDto request,
-            @Nullable @RequestPart MultipartFile[] file,
-            @RequestHeader("Authorization")String bearer) throws IOException {
-
-        return docsCreateService.execute(request,file,bearer);
+    @PostMapping("/create")
+    public DocsResponseDto createDocs(@RequestHeader("Authorization")String bearer, @RequestPart DocsCreateRequestDto request, @RequestPart MultipartFile[] files) throws IOException {
+        return docsCreateService.execute(request, bearer,files);
     }
 
     @PutMapping("/update/{id}")
-    public DocsResponseDto updateDocs(@PathVariable Long id,@RequestBody DocsUpdateRequestDto request,@RequestParam("file") MultipartFile[] file) throws IOException {
+    public DocsResponseDto updateDocs(@PathVariable Long id,@RequestPart DocsUpdateRequestDto request,@RequestPart MultipartFile[] files) throws IOException {
         UserResponseDto currentUser = docsUpdateService.findCurrentUser();
-        return docsUpdateService.execute(id, currentUser,request,file);
+
     }
 
 }

@@ -7,9 +7,12 @@ import com.project.bumawiki.domain.docs.domain.repository.DocsRepository;
 import com.project.bumawiki.domain.docs.domain.repository.VersionDocsRepository;
 import com.project.bumawiki.domain.docs.exception.DocsNotFoundException;
 import com.project.bumawiki.domain.docs.exception.NoUpdatablePostException;
+import com.project.bumawiki.domain.docs.presentation.dto.DocsCreateRequestDto;
 import com.project.bumawiki.domain.docs.presentation.dto.DocsResponseDto;
 import com.project.bumawiki.domain.docs.presentation.dto.DocsUpdateRequestDto;
-import com.project.bumawiki.domain.image.service.StorageService;
+
+import com.project.bumawiki.domain.image.service.ImageService;
+
 import com.project.bumawiki.domain.user.entity.User;
 import com.project.bumawiki.domain.user.entity.repository.UserRepository;
 import com.project.bumawiki.domain.user.exception.UserNotLoginException;
@@ -32,25 +35,20 @@ public class DocsUpdateService {
     private final StorageService storageService;
     private final VersionDocsRepository versionDocsRepository;
 
+    private final ImageService imageService;
     @Transactional
-    public DocsResponseDto execute(Long docsId, UserResponseDto userResponseDto, DocsUpdateRequestDto docsUpdateRequestDto, MultipartFile[] file) throws IOException {
+
+    public DocsResponseDto execute(Long docsId, UserResponseDto userResponseDto, DocsUpdateRequestDto docsUpdateRequestDto, MultipartFile[] files) throws IOException {
+
         try {
             SecurityUtil.getCurrentUser().getUser().getAuthority();
         }catch(Exception e){
             throw UserNotLoginException.EXCEPTION;
         }
-        Docs foundDocs = docsRepository.findById(docsId).
-                orElseThrow(() -> DocsNotFoundException.EXCEPTION);
-        if(file != null){
-            ArrayList<String> Fileuri = null;
-            if(file.length == 1){
-                Fileuri.set(0, upLoadFile(file[0], foundDocs.getTitle()));
-            }
-            else {
-                Fileuri = uploadMultipleFiles(file,foundDocs.getTitle());
-            }
-            setImageUrlInContents(docsUpdateRequestDto.getContents(),Fileuri);
-        }
+
+        Docs FoundDocs = docsRepository.findById(docsId)
+                        .orElseThrow(() -> DocsNotFoundException.EXCEPTION);
+        setImageUrlInContents(docsUpdateRequestDto,imageService.GetFileUrl(files, FoundDocs.getTitle()));
 
         VersionDocs savedVersionDocs = saveVersionDocs(docsUpdateRequestDto, docsId);
         Docs docs = setVersionDocsToDocs(savedVersionDocs);
@@ -106,23 +104,13 @@ public class DocsUpdateService {
     }
 
 
-    private String upLoadFile(MultipartFile file,String Title) throws IOException {
-        String fileName = storageService.saveFile(file,Title);
-        return "http://10.150.150.56/image/display/"+Title+"/"+fileName;
-    }
-    private ArrayList<String> uploadMultipleFiles(MultipartFile[] files,String Title) throws IOException {
-        ArrayList<String> ImageUrl = null;
-        int i=0;
-        for (MultipartFile file : files){
-            ImageUrl.set(i, upLoadFile(file, Title));
-            i++;
+    public void setImageUrlInContents(DocsUpdateRequestDto docsUpdateRequestDto, ArrayList<String> urls){
+        String content = docsUpdateRequestDto.getContents();
+        for (String url : urls) {
+            content = content.replace("[[사진]]",url);
         }
-        return ImageUrl;
-    }
+        docsUpdateRequestDto.updateContent(content);
 
-    public void setImageUrlInContents(String contents, ArrayList<String> ImageUrl) {
-        for (String URL : ImageUrl) {
-            contents = contents.replace("[[사진]]", URL);
-        }
     }
 }
+

@@ -28,4 +28,10 @@ public class DocsCreateRequestDto {
     @NotBlank
     private DocsType docsType;
 
+
+    public DocsCreateRequestDto updateContent(String setContent){
+        this.contents = setContent;
+        return this;
+    }
+
 }

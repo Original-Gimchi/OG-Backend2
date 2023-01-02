@@ -6,6 +6,7 @@ import com.project.bumawiki.domain.docs.domain.Docs;
 import com.project.bumawiki.domain.docs.domain.VersionDocs;
 import com.project.bumawiki.domain.docs.domain.repository.DocsRepository;
 import com.project.bumawiki.domain.docs.domain.repository.VersionDocsRepository;
+import com.project.bumawiki.domain.image.service.ImageService;
 import com.project.bumawiki.domain.user.entity.User;
 import com.project.bumawiki.domain.user.exception.UserNotFoundException;
 import com.project.bumawiki.domain.user.exception.UserNotLoginException;
@@ -19,7 +20,7 @@ import com.project.bumawiki.domain.docs.presentation.dto.DocsResponseDto;
 import com.project.bumawiki.domain.docs.presentation.dto.DocsCreateRequestDto;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import com.project.bumawiki.domain.image.service.StorageService;
+
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -37,26 +38,17 @@ public class DocsCreateService {
     @Autowired
     private final StorageService storageService;
     private final JwtUtil jwtUtil;
-
     private final AuthIdRepository authIdRepository;
+    private final ImageService imageService;
 
 
     @Transactional
-    public DocsResponseDto execute(DocsCreateRequestDto docsCreateRequestDto, MultipartFile[] file, String bearer) throws IOException {
-        if(file != null){
-            ArrayList<String> Fileuri = new ArrayList<String>();
-            if(file.length == 1){
-                String title = docsCreateRequestDto.getTitle();
-                Fileuri.add(upLoadFile(file[0], title));
-            }
-            else {
-                Fileuri = uploadMultipleFiles(file,docsCreateRequestDto.getTitle());
-            }
-            setImageUrlInContents(docsCreateRequestDto.getContents(),Fileuri);
-        }
 
+    public DocsResponseDto execute(DocsCreateRequestDto docsCreateRequestDto, String bearer, MultipartFile[] files) throws IOException {
 
-        //checkIsLoginUser(bearer);
+        checkIsLoginUser(bearer);
+        setImageUrlInContents(docsCreateRequestDto,imageService.GetFileUrl(files, docsCreateRequestDto.getTitle()));
+
 
         Docs docs = createDocs(docsCreateRequestDto);
         VersionDocs savedDocs = saveVersionDocs(docsCreateRequestDto, docs.getId());
@@ -120,25 +112,13 @@ public class DocsCreateService {
     }
 
 
-
-    private String upLoadFile(MultipartFile file,String Title) throws IOException {
-        String fileName = storageService.saveFile(file,Title);
-        return "http://10.150.150.56/image/display/"+Title+"/"+fileName;
-    }
-    private ArrayList<String> uploadMultipleFiles(MultipartFile[] files,String Title) throws IOException {
-        ArrayList<String> ImageUrl = null;
-        int i=0;
-        for (MultipartFile file : files){
-            ImageUrl.set(i, upLoadFile(file, Title));
-            i++;
+    public void setImageUrlInContents(DocsCreateRequestDto docsCreateRequestDto,ArrayList<String> urls){
+        String content = docsCreateRequestDto.getContents();
+        for (String url : urls) {
+            content = content.replace("[[사진]]",url);
         }
-        return ImageUrl;
-    }
+        docsCreateRequestDto.updateContent(content);
 
-    public void setImageUrlInContents(String contents, ArrayList<String> ImageUrl) {
-        for (String URL : ImageUrl) {
-            contents = contents.replace("[[사진]]", URL);
-        }
     }
 }
 

@@ -32,5 +32,9 @@ public class DocsResponseDto {
         this.enroll = docs.getEnroll();
         this.view = docs.getView();
     }
+    public DocsResponseDto updateContent(String setContent){
+        this.contents = setContent;
+        return this;
+    }
 }
 

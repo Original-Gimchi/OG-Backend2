@@ -1,6 +1,5 @@
 package com.project.bumawiki.domain.contribute.domain;
 
-//import com.project.bumawiki.domain.contribute.presentation.dto.ContributeResponseDto;
 import com.project.bumawiki.domain.docs.domain.Docs;
 import com.project.bumawiki.domain.user.entity.User;
 import lombok.*;
